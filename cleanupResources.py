@@ -37,7 +37,7 @@ if __name__ == "__main__":
         print statement
       else:
         direct_output = direct_output[:-1]
-        print "Total Resources need are Captured for  cmdType =>",(direct_output)
+        print "Total Resources Captured for  cmdType =>",(direct_output)
         statements = dataValidations(direct_output, "notEmptyList")
         for statement  in statements:
           print statement
