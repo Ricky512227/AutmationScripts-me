@@ -2,15 +2,17 @@ import subprocess, sys
 nameSpace = "miniudm"
 cmdTypes = [ "serviceaccounts" ,"service" , "rolebinding" ,"roles","jobs", "pvc" ,"configmap","secret",  "statefulset"]
 
+
 def deleteDataValidation(cmdType,tempItem, nameSpace ):
   try:
     deleteCmd = "kubectl delete "+ cmdType +" "+str(tempItem)+" -n "+ nameSpace
+    #direct_output1 = subprocess.check_output(deleteCmd, shell=True)
     generateStatement = str(cmdType) +" has found the resource ===> "+ str(tempItem) +" <=== and its deleted..."
     return generateStatement
   except Exception as ex:
         print(str(ex) + '\tLine No:' + str(sys.exc_info()[2].tb_lineno))
         
-def dataValidations(tempList,keyWord):
+def dataValidations(tempList,keyWord,nameSpace):
   try:
     tempList = []
     if keyWord == "EmptyList":
@@ -19,9 +21,10 @@ def dataValidations(tempList,keyWord):
     elif keyWord == "notEmptyList":
       for eachIndex, eachItem in enumerate(tempList):
         if not eachItem.startswith("default"):
-          # Here we are skipping the default value and the remaining values need to be delete..
-          tempData = deleteDataValidation(cmdType,eachItem, nameSpace)
-          tempList.append(tempData)
+          if eachItem.startswith(nameSpace):
+            # Here we are skipping the default value and the remaining values need to be delete..
+            tempData = deleteDataValidation(cmdType,eachItem, nameSpace)
+            tempList.append(tempData)
       return tempList
   except Exception as ex:
         print(str(ex) + '\tLine No:' + str(sys.exc_info()[2].tb_lineno))
@@ -33,12 +36,12 @@ if __name__ == "__main__":
       direct_output = subprocess.check_output(getCmd, shell=True)
       direct_output = direct_output.split("\n")
       if direct_output == ['']:
-        statement = dataValidations(direct_output, "EmptyList")
+        statement = dataValidations(direct_output, "EmptyList",nameSpace)
         print statement
       else:
         direct_output = direct_output[:-1]
         print "Total Resources Captured for  cmdType =>",(direct_output)
-        statements = dataValidations(direct_output, "notEmptyList")
+        statements = dataValidations(direct_output, "notEmptyList",nameSpace)
         for statement  in statements:
           print statement
       raw_input("****************************************************************")
